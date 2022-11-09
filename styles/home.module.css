@@ -26,9 +26,9 @@
 }
 
 .home_button {
-    width: 10%;
+    width: 15%;
     padding: 12px 20px;
-    margin: 8px 0;
+    margin: 10px 29px;;
     display: inline-block;
     border: 1px solid #FFF;
     border-radius: 4px;
@@ -71,6 +71,10 @@
     justify-content: space-around;
 }
 
+.home_article_edicao_data {
+    display: flex;
+    width: 90%;
+}
 .home_table {
     width: 95%;
     background-color: white;
@@ -83,5 +87,19 @@
     border: 1px solid #dddddd;
     text-align: left;
     padding: 8px;
+}
+
+.home_texto_data {
+    color: #C5CAE9;
+    font-family: 'Roboto', 'Inter', serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+}
+
+.home_end_page {
+    display: flex;
+    margin-left:  5.338541666666667vw;
 }
 

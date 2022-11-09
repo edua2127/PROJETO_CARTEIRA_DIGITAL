@@ -1,5 +1,6 @@
 import React from 'react'
 import style from '../styles/home.module.css'
+
 const home = () => {
 
 
@@ -67,9 +68,16 @@ const home = () => {
                     </table>
                 </article>
             </section>
-            <section className={style.home_section}>
+            <section className={style.home_end_page}>
+                <article className={style.home_article_edicao_data}>
+                    <button className={style.home_button}>Aumentar Data</button>
+                    <h1 className={style.home_texto_data}>11/09</h1>
+                    <button className={style.home_button}>Diminuir Data</button>
+
+                    <button className={style.home_button}>Editar Periodo</button>
+                </article>
                 <article>
-                    <button value={"<"} />
+                    <h1 className={style.home_texto_data}>R$ 40</h1>
                 </article>
             </section>
         </main>
