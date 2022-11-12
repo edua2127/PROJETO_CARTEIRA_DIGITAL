@@ -51,7 +51,6 @@ const Home = () => {
                 <h1 className={style.home_logo}>Walle</h1>
             </header>
             <main>
-                <h1>teste</h1>
                 <section className={style.home_section}>
                     <article className={style.home_article}>
                         <input type="number" className={style.home_input} placeholder={"Valor"}
