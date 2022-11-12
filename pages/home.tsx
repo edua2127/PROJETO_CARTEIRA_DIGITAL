@@ -47,8 +47,6 @@ const Home = () => {
         setMetodoDePagamento("")
         console.log(despesas)
     }
-
-
     return (
         <div>
             <header>
