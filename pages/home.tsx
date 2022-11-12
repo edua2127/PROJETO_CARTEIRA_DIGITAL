@@ -7,17 +7,21 @@ const Home = () => {
     const [moeda, setMoeda] = React.useState("")
     const [tag, setTag] = React.useState("")
     const [descricao, setDescricao] = React.useState("")
+
     let teste:despesa[] = []
+    let testeDate: Date = new Date(2022, 11, 12)
+
     const [despesas, setDespesas] = React.useState(teste)
     const [valorTotal, setValorTotal] = React.useState(0)
-
+    const [data, setData] = React.useState(testeDate)
 
     interface despesa  {
         valor: number,
         metodoDePagamento: string,
         moeda: string,
         tag: string,
-        descricao: string
+        descricao: string,
+        data: Date
     }
 
     function cadastrarDespesa() {
@@ -27,10 +31,13 @@ const Home = () => {
             metodoDePagamento,
             moeda,
             tag,
-            descricao
+            descricao,
+            data,
         }
-        console.log(novaDespesa)
-        setDespesas((listaAntiga:despesa[]) => [...listaAntiga, novaDespesa])
+
+        let teste = [...despesas, novaDespesa]
+        setDespesas(teste)
+
         setValorTotal(somaValorTotal(valorTotal, valor))
 
         setValor(0)
@@ -38,8 +45,8 @@ const Home = () => {
         setMoeda("")
         setTag("")
         setMetodoDePagamento("")
+        console.log(despesas)
     }
-
 
 
     return (
@@ -78,6 +85,10 @@ const Home = () => {
                             <option value="LAZER">Lazer</option>
                             <option value="OUTRO">Outro</option>
                         </select>
+                        <input type="date" className={style.home_input} placeholder={"data da despesa"}
+                               value={data.toString()}
+                               onChange={(e)=> setData(new Date(e.target.value))}
+                        />
                     </article>
                     <article className={style.home_article}>
                         <input type={"text"} className={style.home_input_descricao} placeholder={"Descrição"}
@@ -92,17 +103,20 @@ const Home = () => {
                             <tr>
                                 <th className={style.home_table_td_th}>Valor</th>
                                 <th className={style.home_table_td_th}>Moeda</th>
+                                <th className={style.home_table_td_th}>Data da Despesa</th>
                                 <th className={style.home_table_td_th}>Metodo de Pagamento</th>
                                 <th className={style.home_table_td_th}>Tag</th>
                                 <th className={style.home_table_td_th}>Descricao</th>
                             </tr>
                             </thead>
                             <tbody>
+
                             {despesas.length > 0 && despesas.map((item:despesa, index:number) =>
                                 (
                                     <tr key={index}>
                                         <td>{item.valor}</td>
                                         <td>{item.moeda}</td>
+                                        <td> {item.data.getMonth()} / {item.data.getFullYear()} </td>
                                         <td>{item.metodoDePagamento}</td>
                                         <td>{item.tag}</td>
                                         <td>{item.descricao}</td>
@@ -114,10 +128,6 @@ const Home = () => {
                 </section>
                 <section className={style.home_end_page}>
                     <article className={style.home_article_edicao_data}>
-                        <button className={style.home_button}>Aumentar Data</button>
-                        <h1 className={style.home_texto_data}>11/09</h1>
-                        <button className={style.home_button}>Diminuir Data</button>
-
                         <button className={style.home_button}>Editar Periodo</button>
                     </article>
                     <article>
