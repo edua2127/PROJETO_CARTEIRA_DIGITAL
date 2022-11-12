@@ -1,9 +1,9 @@
 .home_logo {
-    font-family: 'Inter', serif;
+    font-family: 'Inter';
     font-style: italic;
     font-weight: 500;
-    font-size: 6.510416666666667vw;
-    line-height: 1.9893899204244032vh;
+    font-size: 100px;
+    line-height: 15px;
     color: #C5CAE9;
     margin-left: 1.2369791666666667vw;
 }
@@ -13,93 +13,5 @@
 }
 
 .home_input {
-    width: 15%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #FFF;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: #303F9F;
-    color: white;
-    transition-duration: 0.4s;
-}
-
-.home_button {
-    width: 15%;
-    padding: 12px 20px;
-    margin: 10px 29px;;
-    display: inline-block;
-    border: 1px solid #FFF;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: #303F9F;
-    color: white;
-    transition-duration: 0.4s;
-}
-.home_button:hover {
-    background-color: white;
-    color: black;
-}
-
-.home_input[type=submit]:hover {
-    background-color: white;
-    color: black;
-}
-.home_input_descricao {
-    width: 75%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #FFF;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: #303F9F;
     color: white;
 }
-
-.home_input_descricao::placeholder {
-    color: white;
-}
-
-.home_input::placeholder {
-    color: white;
-}
-
-.home_article {
-    display: flex;
-    justify-content: space-around;
-}
-
-.home_article_edicao_data {
-    display: flex;
-    width: 90%;
-}
-.home_table {
-    width: 95%;
-    background-color: white;
-    margin: 10px 29px;
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-}
-
-.home_table_td_th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
-
-.home_texto_data {
-    color: #C5CAE9;
-    font-family: 'Roboto', 'Inter', serif;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 24px;
-}
-
-.home_end_page {
-    display: flex;
-    margin-left:  5.338541666666667vw;
-}
-
