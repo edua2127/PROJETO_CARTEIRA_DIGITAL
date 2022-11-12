@@ -23,7 +23,6 @@ const Home = () => {
         descricao: string,
         data: Date
     }
-
     function cadastrarDespesa() {
 
         let novaDespesa = {
