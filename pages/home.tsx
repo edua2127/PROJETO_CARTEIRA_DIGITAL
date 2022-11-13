@@ -5,22 +5,40 @@ import {adicionaDespesa } from '../slice/despesaSlice'
 import type {RootState} from '../store'
 
 const Home = () => {
+    //variaveis usadas para setar um valor inicial
+    let teste:despesa[] = []
+    let testeDate: Date = new Date(Date.now())
+
+    //variaveis que compoem uma dispesa
     const [valor, setValor] = React.useState(0);
     const [metodoDePagamento, setMetodoDePagamento] = React.useState("");
     const [moeda, setMoeda] = React.useState("")
     const [tag, setTag] = React.useState("")
     const [descricao, setDescricao] = React.useState("")
-    let teste:despesa[] = []
-    let testeDate: Date = new Date(Date.now())
-    const [valorTotal, setValorTotal] = React.useState(0)
     const [data, setData] = React.useState(testeDate)
+    
+    //variavel usada para armazenar o valor total das despesas
+    const [valorTotal, setValorTotal] = React.useState(0)
+
+    /*
+        despesasExibidas: variavel que armazena a lista de despesas que vao ser exibidas de acordo
+        com o filtro atual. o filtro padrao é que todas as despesas vao ser visualizadas
+    */
     const [despesasExibidas, setDespesasExibidas] = React.useState(teste)
+
+    //variavel que guarda o valor do dolar recebido pela api
     const [valorDolar, setValorDolar] = React.useState(1)
+
+    /*
+        variavel que sinaliza quando é para atualizar o valor do dolar, normalmente é logo em depois que for
+        inserida uma nova despesa
+    */
     const [atualizaValorDolar, setAtualizaValorDolar] = React.useState(false)
 
-    //usado para acessar os reduces que alteram os states
+    //variavel usada para fazer alteracoes de estado, vc passa o reducer que vc quer como parametro da variavel
     const dispatch = useDispatch()
-    //acessa o state de despesas
+
+    //variavel que guarda todas as despesas cadastradas, usada para obter o seu valor
     const despesasRedux = useSelector((state:RootState)=> state.despesa.despesas)
 
     interface despesa  {
@@ -32,10 +50,8 @@ const Home = () => {
         data: Date
     }
 
-    function exibirNovasDespesas(novasDespesas: despesa[]) {
-        setDespesasExibidas(novasDespesas)
-    }
 
+    //api que retorna o valor do dolar atual
     React.useEffect(() => {
         const fetchData = async() => {
             try {
@@ -83,7 +99,7 @@ const Home = () => {
         dispatch(adicionaDespesa(novaDespesa))
 
         setAtualizaValorDolar(true)
-        exibirNovasDespesas([...despesasRedux, novaDespesa])
+        setDespesasExibidas([...despesasRedux, novaDespesa])
         calculoDoValorTotal([...despesasRedux, novaDespesa])
     }
 
@@ -167,7 +183,7 @@ const Home = () => {
                         <button className={style.home_button}>Editar Periodo</button>
                     </article>
                     <article>
-                        <h1 className={style.home_texto_data}>R$ {valorTotal}</h1>
+                        <h1 className={style.home_texto_data}>R$ {valorTotal.toFixed(2)}</h1>
                     </article>
                 </section>
             </main>

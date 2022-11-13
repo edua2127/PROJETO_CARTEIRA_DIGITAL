@@ -73,7 +73,7 @@
 
 .home_article_edicao_data {
     display: flex;
-    width: 90%;
+    width: 85%;
 }
 .home_table {
     width: 95%;
@@ -96,6 +96,7 @@
     font-weight: 400;
     font-size: 20px;
     line-height: 24px;
+    text-align: right;
 }
 
 .home_end_page {

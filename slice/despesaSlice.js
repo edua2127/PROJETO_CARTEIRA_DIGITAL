@@ -2,7 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 
 //com o criete slice na é necessario o type da action
-
+//slice: reducer + state
+//initialState: states do slice
+//reducers: funcoes que alterao o state, elas retornam o novo valor do initialState!
 
 export const slice = createSlice({
     name: 'despesaSlice',
