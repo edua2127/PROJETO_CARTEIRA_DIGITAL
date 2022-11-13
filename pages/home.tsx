@@ -15,8 +15,12 @@ const Home = () => {
     const [valorTotal, setValorTotal] = React.useState(0)
     const [data, setData] = React.useState(testeDate)
     const [despesasExibidas, setDespesasExibidas] = React.useState(teste)
-    const dispatch = useDispatch()
+    const [valorDolar, setValorDolar] = React.useState(1)
+    const [atualizaValorDolar, setAtualizaValorDolar] = React.useState(false)
 
+    //usado para acessar os reduces que alteram os states
+    const dispatch = useDispatch()
+    //acessa o state de despesas
     const despesasRedux = useSelector((state:RootState)=> state.despesa.despesas)
 
     interface despesa  {
@@ -32,12 +36,26 @@ const Home = () => {
         setDespesasExibidas(novasDespesas)
     }
 
+    React.useEffect(() => {
+        const fetchData = async() => {
+            try {
+                const res = await fetch('https://economia.awesomeapi.com.br/json/all')
+                const json = await res.json()
+                setValorDolar(parseFloat(json.USD.bid))
+            } catch (error) {
+                console.log('erro ao carregar o valor do dolar ' + error)
+            }
+            
+        }
+        fetchData()
+    }, [atualizaValorDolar])
+
     function calculoDoValorTotal(novasDespesas: despesa[]) {
 
         setValorTotal((state)=> 0)
         novasDespesas.map((despesaAtual) => {
             if (despesaAtual.moeda === 'DOLAR') {
-                let valorConvertido = despesaAtual.valor * 5
+                let valorConvertido = despesaAtual.valor * valorDolar
                 setValorTotal((valorAntigo) => valorAntigo + valorConvertido)
             } else if (despesaAtual.moeda === 'BRL') {
                 setValorTotal((valorAntigo) => valorAntigo + despesaAtual.valor)
@@ -63,7 +81,8 @@ const Home = () => {
         setMetodoDePagamento("")
 
         dispatch(adicionaDespesa(novaDespesa))
-        
+
+        setAtualizaValorDolar(true)
         exibirNovasDespesas([...despesasRedux, novaDespesa])
         calculoDoValorTotal([...despesasRedux, novaDespesa])
     }
