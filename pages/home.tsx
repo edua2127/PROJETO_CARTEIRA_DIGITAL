@@ -1,5 +1,9 @@
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import style from '../styles/home.module.css'
+import {adicionaDespesa } from '../slice/despesaSlice'
+import type {RootState} from '../store'
+
 const Home = () => {
     const [valor, setValor] = React.useState(0);
     const [metodoDePagamento, setMetodoDePagamento] = React.useState("");
@@ -8,15 +12,12 @@ const Home = () => {
     const [descricao, setDescricao] = React.useState("")
     let teste:despesa[] = []
     let testeDate: Date = new Date(Date.now())
-
-    const [despesas, setDespesas] = React.useState(teste)
     const [valorTotal, setValorTotal] = React.useState(0)
     const [data, setData] = React.useState(testeDate)
     const [despesasExibidas, setDespesasExibidas] = React.useState(teste)
+    const dispatch = useDispatch()
 
-    const [dataDasDespesasExibidas, setDataDasDespesasExibidas] = React.useState(testeDate)
-    let dataDaUltimaDespesa: Date = testeDate
-
+    const despesasRedux = useSelector((state:RootState)=> state.despesa.despesas)
 
     interface despesa  {
         valor: number,
@@ -46,7 +47,7 @@ const Home = () => {
 
     function cadastrarDespesa() {
 
-        let novaDespesa = {
+        const novaDespesa = {
             valor,
             metodoDePagamento,
             moeda,
@@ -60,12 +61,11 @@ const Home = () => {
         setMoeda("")
         setTag("")
         setMetodoDePagamento("")
-        setDespesas((state)=> {
-            return [...despesas, novaDespesa]
-        })
 
-        exibirNovasDespesas([...despesas, novaDespesa])
-        calculoDoValorTotal([...despesas, novaDespesa])
+        dispatch(adicionaDespesa(novaDespesa))
+        
+        exibirNovasDespesas([...despesasRedux, novaDespesa])
+        calculoDoValorTotal([...despesasRedux, novaDespesa])
     }
 
     return (
@@ -105,7 +105,7 @@ const Home = () => {
                         <input type="date" className={style.home_input} placeholder={"data da despesa"}
                                value={data.toString()}
                                onChange={(e)=> setData(new Date(e.target.value))}
-                        />
+                        /> 
                     </article>
                     <article className={style.home_article}>
                         <input type={"text"} className={style.home_input_descricao} placeholder={"Descrição"}
@@ -128,7 +128,7 @@ const Home = () => {
                             </thead>
                             <tbody>
 
-                            {despesas.length > 0 && despesasExibidas.map((item:despesa, index:number) =>
+                            {despesasRedux.length > 0 && despesasExibidas.map((item:despesa, index:number) =>
                                 (
                                     <tr key={index}>
                                         <td>{item.valor}</td>
