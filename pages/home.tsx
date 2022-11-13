@@ -1,6 +1,5 @@
 import React from 'react'
 import style from '../styles/home.module.css'
-import {somaValorTotal} from "../utils/calculoDoValorTotalDasDespesas"
 const Home = () => {
     const [valor, setValor] = React.useState(0);
     const [metodoDePagamento, setMetodoDePagamento] = React.useState("");
@@ -8,11 +7,16 @@ const Home = () => {
     const [tag, setTag] = React.useState("")
     const [descricao, setDescricao] = React.useState("")
     let teste:despesa[] = []
-    let testeDate: Date = new Date(2022, 11, 12)
+    let testeDate: Date = new Date(Date.now())
 
     const [despesas, setDespesas] = React.useState(teste)
     const [valorTotal, setValorTotal] = React.useState(0)
     const [data, setData] = React.useState(testeDate)
+    const [despesasExibidas, setDespesasExibidas] = React.useState(teste)
+
+    const [dataDasDespesasExibidas, setDataDasDespesasExibidas] = React.useState(testeDate)
+    let dataDaUltimaDespesa: Date = testeDate
+
 
     interface despesa  {
         valor: number,
@@ -22,6 +26,24 @@ const Home = () => {
         descricao: string,
         data: Date
     }
+
+    function exibirNovasDespesas(novasDespesas: despesa[]) {
+        setDespesasExibidas(novasDespesas)
+    }
+
+    function calculoDoValorTotal(novasDespesas: despesa[]) {
+
+        setValorTotal((state)=> 0)
+        novasDespesas.map((despesaAtual) => {
+            if (despesaAtual.moeda === 'DOLAR') {
+                let valorConvertido = despesaAtual.valor * 5
+                setValorTotal((valorAntigo) => valorAntigo + valorConvertido)
+            } else if (despesaAtual.moeda === 'BRL') {
+                setValorTotal((valorAntigo) => valorAntigo + despesaAtual.valor)
+            }
+        })
+    }
+
     function cadastrarDespesa() {
 
         let novaDespesa = {
@@ -33,18 +55,19 @@ const Home = () => {
             data,
         }
 
-        let teste = [...despesas, novaDespesa]
-        setDespesas(teste)
-
-        setValorTotal(somaValorTotal(valorTotal, valor))
-
         setValor(0)
         setDescricao("")
         setMoeda("")
         setTag("")
         setMetodoDePagamento("")
-        console.log(despesas)
+        setDespesas((state)=> {
+            return [...despesas, novaDespesa]
+        })
+
+        exibirNovasDespesas([...despesas, novaDespesa])
+        calculoDoValorTotal([...despesas, novaDespesa])
     }
+
     return (
         <div>
             <header>
@@ -67,19 +90,17 @@ const Home = () => {
                                 placeholder={"Metodo de Pagamento"}
                                 value={metodoDePagamento}
                                 onChange={(e)=> setMetodoDePagamento(e.target.value)}>
-                            <option value="DINHEIRO FISICO">Dinheiro Fisico</option>
-                            <option value="DEBITO OU PIX">Debito ou Pix</option>
-                            <option value="CREDITO">Credito</option>
+                            <option value="DINHEIRO">Dinheiro</option>
+                            <option value="CARTÃO DE DÉBITO">Cartão de débito</option>
+                            <option value="CARTÃO DE CRÉDITO">Cartão de crédito</option>
                         </select>
                         <select className={style.home_input} placeholder={"Tag"}
                                 value={tag} onChange={(e)=> setTag(e.target.value)}>
                             <option value="ALIMENTAÇÃO">Alimentação</option>
-                            <option value="AGUA">Agua</option>
-                            <option value="LUZ">Luz</option>
-                            <option value="TELEFONE">Telefone</option>
-                            <option value="TRANSPORTE">Transporte</option>
                             <option value="LAZER">Lazer</option>
-                            <option value="OUTRO">Outro</option>
+                            <option value="TRABALHO">Trabalho</option>
+                            <option value="TRANSPORTE">Transporte</option>
+                            <option value="SAÚDE">Saúde</option>
                         </select>
                         <input type="date" className={style.home_input} placeholder={"data da despesa"}
                                value={data.toString()}
@@ -107,7 +128,7 @@ const Home = () => {
                             </thead>
                             <tbody>
 
-                            {despesas.length > 0 && despesas.map((item:despesa, index:number) =>
+                            {despesas.length > 0 && despesasExibidas.map((item:despesa, index:number) =>
                                 (
                                     <tr key={index}>
                                         <td>{item.valor}</td>
