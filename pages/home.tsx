@@ -66,6 +66,12 @@ const Home = () => {
         fetchData()
     }, [atualizaValorDolar])
 
+
+    /* 
+        funcao que calcula o valor total das despesas, verificando para cada despesa se essa foi em dolar
+        ou em real, se em dolar o valor da despesa é convertido para real para em seguida ser somado ao montante,
+        se for real vai se somado diredo no montante
+    */
     function calculoDoValorTotal(novasDespesas: despesa[]) {
 
         setValorTotal((state)=> 0)
@@ -90,15 +96,20 @@ const Home = () => {
             data,
         }
 
+        //limpa os states que compoem a despesa
         setValor(0)
         setDescricao("")
         setMoeda("")
         setTag("")
         setMetodoDePagamento("")
 
+        //guarda a nova despesa no redux state
         dispatch(adicionaDespesa(novaDespesa))
 
+        //atualiza o valro do dolar para calcular o valor total das despesas
         setAtualizaValorDolar(true)
+
+        //filtro padrao: todas as despesas vao ser visualizadas, apos realizar um cadastro
         setDespesasExibidas([...despesasRedux, novaDespesa])
         calculoDoValorTotal([...despesasRedux, novaDespesa])
     }
