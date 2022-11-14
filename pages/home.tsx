@@ -4,6 +4,9 @@ import style from '../styles/home.module.css'
 import {adicionaDespesa } from '../slice/despesaSlice'
 import type {RootState} from '../store'
 import { despesa } from '../interface/despesa';
+import { editaDespesasExibidas } from '../slice/despesasExibidasSlice';
+import EditorPeriodo from '../components/EditorPeriodo';
+import { editaAplicarFiltro } from '../slice/aplicarFiltroSlice';
 const Home = () => {
     //variaveis usadas para setar um valor inicial
     let teste:despesa[] = []
@@ -31,10 +34,12 @@ const Home = () => {
     const dispatch = useDispatch()
     //variavel que guarda todas as despesas cadastradas, usada para obter o seu valor
     const despesasRedux = useSelector((state:RootState)=> state.despesa.despesas)
+    
 
-
-    const [despesasExibidas, setDespesasExibidas] = React.useState(teste)
+    
     const [dataAtual, setDataAtual] = React.useState(DateType)
+
+    const stateGeral = useSelector((state:RootState) => state)
 
     function aumentarMesAtual() {
         const novaData = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, dataAtual.getDay())
@@ -58,7 +63,7 @@ const Home = () => {
             })
             console.log(dataAtual.getMonth() + 1)
             console.log(novaDespesasExibidas)
-            setDespesasExibidas(novaDespesasExibidas)
+            dispatch(editaDespesasExibidas(novaDespesasExibidas))
         }
 
         filtroPelaDataAtual()
@@ -91,7 +96,10 @@ const Home = () => {
     React.useEffect(()=> {
         function calculoDoValorTotal() {
             setValorTotal((state)=> 0)
-            despesasExibidas.map((despesaAtual) => {
+
+            const despesaExibidasLocal: despesa[] = stateGeral.despesasExibidas.despesasExibidas
+
+            despesaExibidasLocal.map((despesaAtual) => {
                 if (despesaAtual.moeda === 'DOLAR') {
                     let valorConvertido = despesaAtual.valor * valorDolar
                     setValorTotal((valorAntigo) => valorAntigo + valorConvertido)
@@ -101,7 +109,7 @@ const Home = () => {
             })
         }
         calculoDoValorTotal()
-    }, [despesasExibidas])
+    }, [stateGeral.despesasExibidas.despesasExibidas])
     
     function cadastrarDespesa() {
 
@@ -128,10 +136,12 @@ const Home = () => {
         setAtualizaValorDolar(true)
 
         //filtro padrao: todas as despesas vao ser visualizadas, apos realizar um cadastro
-        setDespesasExibidas([...despesasRedux, novaDespesa])
+        dispatch(editaDespesasExibidas([...despesasRedux, novaDespesa]))
     }
 
-
+    function handleChangeAplicarFiltro() {
+        dispatch(editaAplicarFiltro(true))
+    }
 
     return (
         <div>
@@ -193,7 +203,7 @@ const Home = () => {
                             </thead>
                             <tbody className={style.home_table_body}>
 
-                            {despesasRedux.length > 0 && despesasExibidas.map((item:despesa, index:number) =>
+                            {despesasRedux.length > 0 && stateGeral.despesasExibidas.despesasExibidas.map((item:despesa, index:number) =>
                                 (
                                     <tr key={index} className={style.home_table_tr}>
                                         <td>{item.valor}</td>
@@ -213,11 +223,13 @@ const Home = () => {
                         <button className={style.home_button} onClick={diminuirMesAtual}>mês anterior</button>
                         <h1 className={style.home_texto_data}>{dataAtual.getMonth() + 1} / {dataAtual.getFullYear()}</h1>
                         <button onClick={aumentarMesAtual} className={style.home_button}>próximo mês</button>
+                        <button onClick={handleChangeAplicarFiltro}  className={style.home_button}>editar período</button>
                     </article>
                     <article>
                         <h1 className={style.home_texto_data}>R$ {valorTotal.toFixed(2)}</h1>
                     </article>
                 </section>
+                {stateGeral.aplicarFiltro.aplicarFiltro && <EditorPeriodo />}
             </main>
         </div>
     )

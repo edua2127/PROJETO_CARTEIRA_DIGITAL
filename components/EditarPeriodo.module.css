@@ -1,0 +1,55 @@
+.home_input {
+    width: 80%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #FFF;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #303F9F;
+    color: white;
+    transition-duration: 0.4s;
+}
+
+.home_input[type=submit]:hover {
+    background-color: white;
+    color: black;
+}
+
+.home_input[type=submit] {
+    width: 20%;
+    height: 60%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #FFF;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #303F9F;
+    color: white;
+    transition-duration: 0.4s;
+}
+
+.home_article_edicao_data {
+    display: flex;
+    width: 85%;
+    align-items: flex-end;
+    margin-left:  1.8880208333333333vw;
+}
+
+.home_end_page {
+    display: flex;
+    margin-left:  5.338541666666667vw;
+    justify-content: space-between;
+    margin-right: 5vw;
+}
+
+.home_texto_data {
+    color: #C5CAE9;
+    font-family: 'Roboto', 'Inter', serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 24px;
+    text-align: right;
+}
