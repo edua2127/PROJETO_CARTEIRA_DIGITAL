@@ -102,5 +102,7 @@
 .home_end_page {
     display: flex;
     margin-left:  5.338541666666667vw;
+    justify-content: flex-end;
+    margin-right: 5vw;
 }
 

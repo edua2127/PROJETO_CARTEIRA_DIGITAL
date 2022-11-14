@@ -173,9 +173,6 @@ const Home = () => {
                     </article>
                 </section>
                 <section className={style.home_end_page}>
-                    <article className={style.home_article_edicao_data}>
-                        <button className={style.home_button}>Editar Periodo</button>
-                    </article>
                     <article>
                         <h1 className={style.home_texto_data}>R$ {valorTotal.toFixed(2)}</h1>
                     </article>
