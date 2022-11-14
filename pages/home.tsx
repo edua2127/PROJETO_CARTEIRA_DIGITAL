@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import style from '../styles/home.module.css'
 import {adicionaDespesa } from '../slice/despesaSlice'
 import type {RootState} from '../store'
-
+import { despesa } from '../interface/despesa';
 const Home = () => {
     //variaveis usadas para setar um valor inicial
     let teste:despesa[] = []
@@ -20,12 +20,6 @@ const Home = () => {
     //variavel usada para armazenar o valor total das despesas
     const [valorTotal, setValorTotal] = React.useState(0)
 
-    /*
-        despesasExibidas: variavel que armazena a lista de despesas que vao ser exibidas de acordo
-        com o filtro atual. o filtro padrao é que todas as despesas vao ser visualizadas
-    */
-    const [despesasExibidas, setDespesasExibidas] = React.useState(teste)
-
     //variavel que guarda o valor do dolar recebido pela api
     const [valorDolar, setValorDolar] = React.useState(1)
 
@@ -40,16 +34,6 @@ const Home = () => {
 
     //variavel que guarda todas as despesas cadastradas, usada para obter o seu valor
     const despesasRedux = useSelector((state:RootState)=> state.despesa.despesas)
-
-    interface despesa  {
-        valor: number,
-        metodoDePagamento: string,
-        moeda: string,
-        tag: string,
-        descricao: string,
-        data: Date
-    }
-
 
     //api que retorna o valor do dolar atual
     React.useEffect(() => {
@@ -110,7 +94,6 @@ const Home = () => {
         setAtualizaValorDolar(true)
 
         //filtro padrao: todas as despesas vao ser visualizadas, apos realizar um cadastro
-        setDespesasExibidas([...despesasRedux, novaDespesa])
         calculoDoValorTotal([...despesasRedux, novaDespesa])
     }
 
@@ -174,7 +157,7 @@ const Home = () => {
                             </thead>
                             <tbody>
 
-                            {despesasRedux.length > 0 && despesasExibidas.map((item:despesa, index:number) =>
+                            {despesasRedux.length > 0 && despesasRedux.map((item:despesa, index:number) =>
                                 (
                                     <tr key={index}>
                                         <td>{item.valor}</td>
