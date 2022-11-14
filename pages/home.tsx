@@ -7,7 +7,7 @@ import { despesa } from '../interface/despesa';
 const Home = () => {
     //variaveis usadas para setar um valor inicial
     let teste:despesa[] = []
-    let testeDate: Date = new Date(Date.now())
+    let DateType: Date = new Date(Date.now())
 
     //variaveis que compoem uma dispesa
     const [valor, setValor] = React.useState(0);
@@ -15,7 +15,7 @@ const Home = () => {
     const [moeda, setMoeda] = React.useState("")
     const [tag, setTag] = React.useState("")
     const [descricao, setDescricao] = React.useState("")
-    const [data, setData] = React.useState(testeDate)
+    const [data, setData] = React.useState(DateType)
     
     //variavel usada para armazenar o valor total das despesas
     const [valorTotal, setValorTotal] = React.useState(0)
@@ -23,21 +23,18 @@ const Home = () => {
     //variavel que guarda o valor do dolar recebido pela api
     const [valorDolar, setValorDolar] = React.useState(1)
 
-    /*
-        variavel que sinaliza quando é para atualizar o valor do dolar, normalmente é logo em depois que for
-        inserida uma nova despesa
-    */
+    //variavel que sinaliza quando é para atualizar o valor do dolar
     const [atualizaValorDolar, setAtualizaValorDolar] = React.useState(false)
+
 
     //variavel usada para fazer alteracoes de estado, vc passa o reducer que vc quer como parametro da variavel
     const dispatch = useDispatch()
-
     //variavel que guarda todas as despesas cadastradas, usada para obter o seu valor
     const despesasRedux = useSelector((state:RootState)=> state.despesa.despesas)
 
-    const [despesasExibidas, setDespesasExibidas] = React.useState(teste)
-    const [dataAtual, setDataAtual] = React.useState(testeDate)
 
+    const [despesasExibidas, setDespesasExibidas] = React.useState(teste)
+    const [dataAtual, setDataAtual] = React.useState(DateType)
 
     function aumentarMesAtual() {
         const novaData = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, dataAtual.getDay())
@@ -134,6 +131,8 @@ const Home = () => {
         setDespesasExibidas([...despesasRedux, novaDespesa])
     }
 
+
+
     return (
         <div>
             <header>
@@ -176,7 +175,7 @@ const Home = () => {
                     <article className={style.home_article}>
                         <input type={"text"} className={style.home_input_descricao} placeholder={"Descrição"}
                                value={descricao} onChange={(e)=>setDescricao(e.target.value)}/>
-                        <input type={"submit"} className={style.home_input} onClick={cadastrarDespesa}/>
+                        <input type={"submit"} className={style.home_input} onClick={cadastrarDespesa} value={"+ adicionar"}/>
                     </article>
                 </section>
                 <section className={style.home_section}>
@@ -211,9 +210,9 @@ const Home = () => {
                 </section>
                 <section className={style.home_end_page}>
                     <article className={style.home_article_edicao_data}>
-                        <button className={style.home_button} onClick={diminuirMesAtual}>mes anterior</button>
+                        <button className={style.home_button} onClick={diminuirMesAtual}>mês anterior</button>
                         <h1 className={style.home_texto_data}>{dataAtual.getMonth() + 1} / {dataAtual.getFullYear()}</h1>
-                        <button onClick={aumentarMesAtual} className={style.home_button}>proximo mes</button>
+                        <button onClick={aumentarMesAtual} className={style.home_button}>próximo mês</button>
                     </article>
                     <article>
                         <h1 className={style.home_texto_data}>R$ {valorTotal.toFixed(2)}</h1>

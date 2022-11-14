@@ -4,7 +4,7 @@ import despesasReducer from './slice/despesaSlice'
 //aqui fica os meus reducers de todoas os states
 export const store = configureStore({
   reducer: {
-    despesa: despesasReducer
+    despesa: despesasReducer,
   },
 })
 
