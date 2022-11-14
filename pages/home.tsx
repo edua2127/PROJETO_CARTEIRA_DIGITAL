@@ -208,7 +208,7 @@ const Home = () => {
                                     <tr key={index} className={style.home_table_tr}>
                                         <td>{item.valor}</td>
                                         <td>{item.moeda}</td>
-                                        <td> {item.data.getMonth() + 1} / {item.data.getFullYear()} </td>
+                                        <td>{item.data.getDate()} / {item.data.getMonth() + 1} / {item.data.getFullYear()} </td>
                                         <td>{item.metodoDePagamento}</td>
                                         <td>{item.tag}</td>
                                         <td>{item.descricao}</td>
