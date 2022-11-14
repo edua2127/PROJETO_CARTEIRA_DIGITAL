@@ -90,19 +90,22 @@ const Home = () => {
         ou em real, se em dolar o valor da despesa é convertido para real para em seguida ser somado ao montante,
         se for real vai se somado diredo no montante
     */
-    function calculoDoValorTotal(novasDespesas: despesa[]) {
-
-        setValorTotal((state)=> 0)
-        novasDespesas.map((despesaAtual) => {
-            if (despesaAtual.moeda === 'DOLAR') {
-                let valorConvertido = despesaAtual.valor * valorDolar
-                setValorTotal((valorAntigo) => valorAntigo + valorConvertido)
-            } else if (despesaAtual.moeda === 'BRL') {
-                setValorTotal((valorAntigo) => valorAntigo + despesaAtual.valor)
-            }
-        })
-    }
-
+    
+    React.useEffect(()=> {
+        function calculoDoValorTotal() {
+            setValorTotal((state)=> 0)
+            despesasExibidas.map((despesaAtual) => {
+                if (despesaAtual.moeda === 'DOLAR') {
+                    let valorConvertido = despesaAtual.valor * valorDolar
+                    setValorTotal((valorAntigo) => valorAntigo + valorConvertido)
+                } else if (despesaAtual.moeda === 'BRL') {
+                    setValorTotal((valorAntigo) => valorAntigo + despesaAtual.valor)
+                }
+            })
+        }
+        calculoDoValorTotal()
+    }, [despesasExibidas])
+    
     function cadastrarDespesa() {
 
         const novaDespesa = {
@@ -128,7 +131,6 @@ const Home = () => {
         setAtualizaValorDolar(true)
 
         //filtro padrao: todas as despesas vao ser visualizadas, apos realizar um cadastro
-        calculoDoValorTotal([...despesasRedux, novaDespesa])
         setDespesasExibidas([...despesasRedux, novaDespesa])
     }
 
