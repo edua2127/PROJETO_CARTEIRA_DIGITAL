@@ -4,10 +4,13 @@ import style from '../styles/home.module.css'
 import {adicionaDespesa } from '../slice/despesaSlice'
 import type {RootState} from '../store'
 import { despesa } from '../interface/despesa';
+import { editaDespesasExibidas } from '../slice/despesasExibidasSlice';
+import EditorPeriodo from '../components/EditorPeriodo';
+import { editaAplicarFiltro } from '../slice/aplicarFiltroSlice';
 const Home = () => {
     //variaveis usadas para setar um valor inicial
     let teste:despesa[] = []
-    let testeDate: Date = new Date(Date.now())
+    let DateType: Date = new Date(Date.now())
 
     //variaveis que compoem uma dispesa
     const [valor, setValor] = React.useState(0);
@@ -15,7 +18,7 @@ const Home = () => {
     const [moeda, setMoeda] = React.useState("")
     const [tag, setTag] = React.useState("")
     const [descricao, setDescricao] = React.useState("")
-    const [data, setData] = React.useState(testeDate)
+    const [data, setData] = React.useState(DateType)
     
     //variavel usada para armazenar o valor total das despesas
     const [valorTotal, setValorTotal] = React.useState(0)
@@ -23,17 +26,50 @@ const Home = () => {
     //variavel que guarda o valor do dolar recebido pela api
     const [valorDolar, setValorDolar] = React.useState(1)
 
-    /*
-        variavel que sinaliza quando é para atualizar o valor do dolar, normalmente é logo em depois que for
-        inserida uma nova despesa
-    */
+    //variavel que sinaliza quando é para atualizar o valor do dolar
     const [atualizaValorDolar, setAtualizaValorDolar] = React.useState(false)
+
 
     //variavel usada para fazer alteracoes de estado, vc passa o reducer que vc quer como parametro da variavel
     const dispatch = useDispatch()
-
     //variavel que guarda todas as despesas cadastradas, usada para obter o seu valor
     const despesasRedux = useSelector((state:RootState)=> state.despesa.despesas)
+    
+
+    
+    const [dataAtual, setDataAtual] = React.useState(DateType)
+
+    const stateGeral = useSelector((state:RootState) => state)
+
+    function aumentarMesAtual() {
+        const novaData = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, dataAtual.getDay())
+        setDataAtual(novaData)
+        console.log(novaData.getMonth() + 1)
+        
+    }
+
+    function diminuirMesAtual() {
+        const novaData = new Date(dataAtual.getFullYear(), dataAtual.getMonth() - 1, dataAtual.getDay())
+        setDataAtual(novaData)
+        console.log(novaData.getMonth() + 1)
+    }
+
+
+    React.useEffect(()=> {
+        function filtroPelaDataAtual() {
+            let novaDespesasExibidas:despesa[] = [...despesasRedux] 
+            novaDespesasExibidas = novaDespesasExibidas.filter((despesaAtual) => {
+                return despesaAtual.data.getMonth() === dataAtual.getMonth() && despesaAtual.data.getFullYear() === dataAtual.getFullYear()
+            })
+            console.log(dataAtual.getMonth() + 1)
+            console.log(novaDespesasExibidas)
+            dispatch(editaDespesasExibidas(novaDespesasExibidas))
+        }
+
+        filtroPelaDataAtual()
+    }, [dataAtual])
+
+    
 
     //api que retorna o valor do dolar atual
     React.useEffect(() => {
@@ -56,19 +92,25 @@ const Home = () => {
         ou em real, se em dolar o valor da despesa é convertido para real para em seguida ser somado ao montante,
         se for real vai se somado diredo no montante
     */
-    function calculoDoValorTotal(novasDespesas: despesa[]) {
+    
+    React.useEffect(()=> {
+        function calculoDoValorTotal() {
+            setValorTotal((state)=> 0)
 
-        setValorTotal((state)=> 0)
-        novasDespesas.map((despesaAtual) => {
-            if (despesaAtual.moeda === 'DOLAR') {
-                let valorConvertido = despesaAtual.valor * valorDolar
-                setValorTotal((valorAntigo) => valorAntigo + valorConvertido)
-            } else if (despesaAtual.moeda === 'BRL') {
-                setValorTotal((valorAntigo) => valorAntigo + despesaAtual.valor)
-            }
-        })
-    }
+            const despesaExibidasLocal: despesa[] = stateGeral.despesasExibidas.despesasExibidas
 
+            despesaExibidasLocal.map((despesaAtual) => {
+                if (despesaAtual.moeda === 'DOLAR') {
+                    let valorConvertido = despesaAtual.valor * valorDolar
+                    setValorTotal((valorAntigo) => valorAntigo + valorConvertido)
+                } else if (despesaAtual.moeda === 'BRL') {
+                    setValorTotal((valorAntigo) => valorAntigo + despesaAtual.valor)
+                }
+            })
+        }
+        calculoDoValorTotal()
+    }, [stateGeral.despesasExibidas.despesasExibidas])
+    
     function cadastrarDespesa() {
 
         const novaDespesa = {
@@ -94,7 +136,11 @@ const Home = () => {
         setAtualizaValorDolar(true)
 
         //filtro padrao: todas as despesas vao ser visualizadas, apos realizar um cadastro
-        calculoDoValorTotal([...despesasRedux, novaDespesa])
+        dispatch(editaDespesasExibidas([...despesasRedux, novaDespesa]))
+    }
+
+    function handleChangeAplicarFiltro() {
+        dispatch(editaAplicarFiltro(true))
     }
 
     return (
@@ -139,7 +185,7 @@ const Home = () => {
                     <article className={style.home_article}>
                         <input type={"text"} className={style.home_input_descricao} placeholder={"Descrição"}
                                value={descricao} onChange={(e)=>setDescricao(e.target.value)}/>
-                        <input type={"submit"} className={style.home_input} onClick={cadastrarDespesa}/>
+                        <input type={"submit"} className={style.home_input} onClick={cadastrarDespesa} value={"+ adicionar"}/>
                     </article>
                 </section>
                 <section className={style.home_section}>
@@ -155,14 +201,14 @@ const Home = () => {
                                 <th className={style.home_table_td_th}>Descricao</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody className={style.home_table_body}>
 
-                            {despesasRedux.length > 0 && despesasRedux.map((item:despesa, index:number) =>
+                            {despesasRedux.length > 0 && stateGeral.despesasExibidas.despesasExibidas.map((item:despesa, index:number) =>
                                 (
-                                    <tr key={index}>
+                                    <tr key={index} className={style.home_table_tr}>
                                         <td>{item.valor}</td>
                                         <td>{item.moeda}</td>
-                                        <td> {item.data.getMonth()} / {item.data.getFullYear()} </td>
+                                        <td>{item.data.getDate()} / {item.data.getMonth() + 1} / {item.data.getFullYear()} </td>
                                         <td>{item.metodoDePagamento}</td>
                                         <td>{item.tag}</td>
                                         <td>{item.descricao}</td>
@@ -173,10 +219,17 @@ const Home = () => {
                     </article>
                 </section>
                 <section className={style.home_end_page}>
+                    <article className={style.home_article_edicao_data}>
+                        <button className={style.home_button} onClick={diminuirMesAtual}>mês anterior</button>
+                        <h1 className={style.home_texto_data}>{dataAtual.getMonth() + 1} / {dataAtual.getFullYear()}</h1>
+                        <button onClick={aumentarMesAtual} className={style.home_button}>próximo mês</button>
+                        <button onClick={handleChangeAplicarFiltro}  className={style.home_button}>editar período</button>
+                    </article>
                     <article>
                         <h1 className={style.home_texto_data}>R$ {valorTotal.toFixed(2)}</h1>
                     </article>
                 </section>
+                {stateGeral.aplicarFiltro.aplicarFiltro && <EditorPeriodo />}
             </main>
         </div>
     )

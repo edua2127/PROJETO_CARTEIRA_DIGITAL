@@ -102,7 +102,15 @@
 .home_end_page {
     display: flex;
     margin-left:  5.338541666666667vw;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-right: 5vw;
+}
+
+.home_table_body {
+    border: 1px solid #dddddd;
+}
+
+.home_table_tr {
+    border: 1px solid #e6e6e6
 }
 
