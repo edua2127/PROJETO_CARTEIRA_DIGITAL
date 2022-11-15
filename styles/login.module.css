@@ -1,0 +1,41 @@
+.login_back{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    background-color: #303F9F;
+    min-width: 100vh;
+    height: 100vh;
+}
+
+.login_center{
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    justify-content: space-evenly;
+    background-color: #448AFF;
+    width: 31.11%;
+    height: 69.44%;
+    border-radius: 5%;
+}
+
+.login_buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-content: center;
+}
+
+.login_logo{
+    align-self: center;
+    font-size: 120px; 
+    color: #c5cae9;
+    font-family: Helvetica;
+    font-style: italic;
+    margin: unset;
+}
+
+.login_input{
+    width: 73.6%;
+    align-self: center;
+}

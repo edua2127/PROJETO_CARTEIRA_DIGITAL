@@ -112,7 +112,7 @@ const Home = () => {
                                 placeholder={"Moeda"}
                                 value={moeda}
                                 onChange={(e)=> setMoeda(e.target.value)}>
-                            <option value="BRL">BRL</option>
+                            <option value="BRL">REAL</option>
                             <option value="DOLAR">DOLAR</option>
                         </select>
                         <select className={style.home_input}
