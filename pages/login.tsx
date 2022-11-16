@@ -14,16 +14,20 @@ function validatePassword(password: string) {
 }
 function validadeFilds(email: string ,password: string){
     let valid = true;
+    console.clear()
 
     if(!validateEmail(email)){
         valid = false;
+        console.log("email incorreto")
     }
     if(!validatePassword(password)){
         
         valid = false;
+        console.log("senha incorreta")
     }
-    console.clear();
+
     console.log(valid);
+
     return valid;   
 }
 
@@ -32,12 +36,13 @@ export default function Login() {
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+    const router = useRouter();
+
     function handleCadastro(){
     }
     
-    function handleLogin(){
-        const router = useRouter();
+    function useLogin(){
+
         if(validadeFilds(email, password)){
             router.push('/home');
         }
@@ -60,8 +65,8 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value) }
                     />
                     <section className={style.login_buttons}>
-                        <MyButton handleEvent={handleCadastro()}>Cadastrar</MyButton>
-                        <MyButton handleEvent={handleLogin()}>Entrar</MyButton>
+                        <MyButton handleEvent={handleCadastro}>Cadastrar</MyButton>
+                        <MyButton handleEvent={useLogin}>Entrar</MyButton>
                     </section>
                 </section>
             </main>
