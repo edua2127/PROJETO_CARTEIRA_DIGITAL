@@ -68,11 +68,8 @@ const Home = () => {
 
 
     /* 
-        funcao que calcula o valor total das despesas, verificando para cada despesa se essa foi em dolar
-        ou em real, se em dolar o valor da despesa é convertido para real para em seguida ser somado ao montante,
-        se for real vai se somado diredo no montante
+        função que calcula o valor total das despesas, verifica se a moeda é dolar e se sim multiplica pelo valor do dolar atual
     */
-    
     React.useEffect(()=> {
         function calculoDoValorTotal() {
             const despesaExibidasLocal: despesa[] = stateGeral.geral.despesasExibidas
@@ -92,6 +89,9 @@ const Home = () => {
         calculoDoValorTotal()
     }, [stateGeral.geral.despesasExibidas])
     
+    /* 
+        funcão que adiciona uma nova despesa ao array de despesas
+    */
     function cadastrarDespesa() {
 
         const novaDespesa: despesa = {
@@ -119,7 +119,10 @@ const Home = () => {
         //filtro padrao: todas as despesas vao ser visualizadas, apos realizar um cadastro
         dispatch(editaDespesasExibidas([...stateGeral.geral.despesas, novaDespesa]))
     }
-
+    
+    /*
+        funcão que sinaliza quando o componente EditorPeriodo deve ser renderizado
+    */
     function handleChangeAplicarFiltro() {
         dispatch(editaAplicarFiltro(true))
     }
