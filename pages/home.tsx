@@ -1,75 +1,55 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import style from '../styles/home.module.css'
-import {adicionaDespesa } from '../slice/despesaSlice'
 import type {RootState} from '../store'
 import { despesa } from '../interface/despesa';
-import { editaDespesasExibidas } from '../slice/despesasExibidasSlice';
+import { editaAplicarFiltro, editaDataAtualDoFiltro, editaDespesasExibidas, editaAtualizaValorDolar, editaDataDaDespesa, editaDescricao, editaDespesas, editaMetodoDePagamento, editaMoeda, editaPeriodoFinal, editaPeriodoInicial, editaTag, editaValor, editaValorDolar, editaValorTotal } from '../slice/geralSlice2';
 import EditorPeriodo from '../components/EditorPeriodo';
-import { editaAplicarFiltro } from '../slice/aplicarFiltroSlice';
 const Home = () => {
     //variaveis usadas para setar um valor inicial
     let teste:despesa[] = []
     let DateType: Date = new Date(Date.now())
 
-    //variaveis que compoem uma dispesa
-    const [valor, setValor] = React.useState(0);
-    const [metodoDePagamento, setMetodoDePagamento] = React.useState("");
-    const [moeda, setMoeda] = React.useState("")
-    const [tag, setTag] = React.useState("")
-    const [descricao, setDescricao] = React.useState("")
-    const [data, setData] = React.useState(DateType)
-    
-    //variavel usada para armazenar o valor total das despesas
-    const [valorTotal, setValorTotal] = React.useState(0)
-
-    //variavel que guarda o valor do dolar recebido pela api
-    const [valorDolar, setValorDolar] = React.useState(1)
-
-    //variavel que sinaliza quando é para atualizar o valor do dolar
-    const [atualizaValorDolar, setAtualizaValorDolar] = React.useState(false)
-
-
-    //variavel usada para fazer alteracoes de estado, vc passa o reducer que vc quer como parametro da variavel
     const dispatch = useDispatch()
-    //variavel que guarda todas as despesas cadastradas, usada para obter o seu valor
-    const despesasRedux = useSelector((state:RootState)=> state.despesa.despesas)
     
-
-    
-    const [dataAtual, setDataAtual] = React.useState(DateType)
-
     const stateGeral = useSelector((state:RootState) => state)
 
     function aumentarMesAtual() {
-        const novaData = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, dataAtual.getDay())
-        setDataAtual(novaData)
+        const novaData = new Date(stateGeral.geral.dataAtualDoFiltro.getFullYear(), 
+        stateGeral.geral.dataAtualDoFiltro.getMonth() + 1, stateGeral.geral.dataAtualDoFiltro.getDay())
+        dispatch(editaDataAtualDoFiltro(novaData))
         console.log(novaData.getMonth() + 1)
         
     }
 
     function diminuirMesAtual() {
-        const novaData = new Date(dataAtual.getFullYear(), dataAtual.getMonth() - 1, dataAtual.getDay())
-        setDataAtual(novaData)
+        const novaData = new Date(stateGeral.geral.dataAtualDoFiltro.getFullYear(), 
+        stateGeral.geral.dataAtualDoFiltro.getMonth() - 1, stateGeral.geral.dataAtualDoFiltro.getDay())
+        dispatch(editaDataAtualDoFiltro(novaData))
         console.log(novaData.getMonth() + 1)
     }
 
 
     React.useEffect(()=> {
         function filtroPelaDataAtual() {
-            let novaDespesasExibidas:despesa[] = [...despesasRedux] 
+            let novaDespesasExibidas:despesa[] = [...stateGeral.geral.despesas] 
             novaDespesasExibidas = novaDespesasExibidas.filter((despesaAtual) => {
-                return despesaAtual.data.getMonth() === dataAtual.getMonth() && despesaAtual.data.getFullYear() === dataAtual.getFullYear()
+                let dataDaDespesaAtual = new Date(despesaAtual.data)
+                dataDaDespesaAtual.setDate(dataDaDespesaAtual.getDate() + 1)
+                const dataAtualDoFiltro = new Date(stateGeral.geral.dataAtualDoFiltro)
+
+                return dataDaDespesaAtual.getMonth() === dataAtualDoFiltro.getMonth() 
+                && dataDaDespesaAtual.getFullYear() === dataAtualDoFiltro.getFullYear()
             })
-            console.log(dataAtual.getMonth() + 1)
+            console.log(stateGeral.geral.dataAtualDoFiltro.getMonth() + 1)
             console.log(novaDespesasExibidas)
             dispatch(editaDespesasExibidas(novaDespesasExibidas))
         }
 
         filtroPelaDataAtual()
-    }, [dataAtual])
+    }, [stateGeral.geral.dataAtualDoFiltro])
 
-    
+
 
     //api que retorna o valor do dolar atual
     React.useEffect(() => {
@@ -77,14 +57,14 @@ const Home = () => {
             try {
                 const res = await fetch('https://economia.awesomeapi.com.br/json/all')
                 const json = await res.json()
-                setValorDolar(parseFloat(json.USD.bid))
+                dispatch(editaValorDolar(parseFloat(json.USD.bid)))
             } catch (error) {
                 console.log('erro ao carregar o valor do dolar ' + error)
             }
             
         }
         fetchData()
-    }, [atualizaValorDolar])
+    }, [stateGeral.geral.atualizaValorDolar])
 
 
     /* 
@@ -95,48 +75,49 @@ const Home = () => {
     
     React.useEffect(()=> {
         function calculoDoValorTotal() {
-            setValorTotal((state)=> 0)
-
-            const despesaExibidasLocal: despesa[] = stateGeral.despesasExibidas.despesasExibidas
-
+            const despesaExibidasLocal: despesa[] = stateGeral.geral.despesasExibidas
+            let valorTotalAtual = 0
             despesaExibidasLocal.map((despesaAtual) => {
+                let valorEmReal = parseFloat(despesaAtual.valor.toString())
+                
                 if (despesaAtual.moeda === 'DOLAR') {
-                    let valorConvertido = despesaAtual.valor * valorDolar
-                    setValorTotal((valorAntigo) => valorAntigo + valorConvertido)
-                } else if (despesaAtual.moeda === 'BRL') {
-                    setValorTotal((valorAntigo) => valorAntigo + despesaAtual.valor)
+                    valorEmReal = despesaAtual.valor * stateGeral.geral.valorDolar
+                    console.log('valor em real depois que foi convertido de dolar: ' + valorEmReal)
                 }
+                valorTotalAtual += valorEmReal
+                console.log(valorTotalAtual)
             })
+            dispatch(editaValorTotal(valorTotalAtual.toFixed(2)))
         }
         calculoDoValorTotal()
-    }, [stateGeral.despesasExibidas.despesasExibidas])
+    }, [stateGeral.geral.despesasExibidas])
     
     function cadastrarDespesa() {
 
-        const novaDespesa = {
-            valor,
-            metodoDePagamento,
-            moeda,
-            tag,
-            descricao,
-            data,
+        const novaDespesa: despesa = {
+            valor: stateGeral.geral.valor,
+            metodoDePagamento: stateGeral.geral.metodoDePagamento,
+            moeda: stateGeral.geral.moeda,
+            tag: stateGeral.geral.tag,
+            descricao: stateGeral.geral.descricao,
+            data: stateGeral.geral.dataDaDespesa,
         }
 
         //limpa os states que compoem a despesa
-        setValor(0)
-        setDescricao("")
-        setMoeda("")
-        setTag("")
-        setMetodoDePagamento("")
+        dispatch(editaValor(0))
+        dispatch(editaDescricao(""))
+        dispatch(editaMoeda(""))
+        dispatch(editaTag(""))
+        dispatch(editaDataDaDespesa(DateType))
+        dispatch(editaMetodoDePagamento(""))
 
         //guarda a nova despesa no redux state
-        dispatch(adicionaDespesa(novaDespesa))
+        dispatch(editaDespesas([...stateGeral.geral.despesas, novaDespesa]))
 
         //atualiza o valro do dolar para calcular o valor total das despesas
-        setAtualizaValorDolar(true)
-
+        dispatch(editaAtualizaValorDolar(true))
         //filtro padrao: todas as despesas vao ser visualizadas, apos realizar um cadastro
-        dispatch(editaDespesasExibidas([...despesasRedux, novaDespesa]))
+        dispatch(editaDespesasExibidas([...stateGeral.geral.despesas, novaDespesa]))
     }
 
     function handleChangeAplicarFiltro() {
@@ -152,25 +133,26 @@ const Home = () => {
                 <section className={style.home_section}>
                     <article className={style.home_article}>
                         <input type="number" className={style.home_input} placeholder={"Valor"}
-                               value={valor}
-                               onChange={(e)=> setValor(parseFloat(e.target.value))}/>
+                               value={stateGeral.geral.valor}
+                               onChange={(e)=> dispatch(editaValor(e.target.value))}/>
                         <select className={style.home_input}
                                 placeholder={"Moeda"}
-                                value={moeda}
-                                onChange={(e)=> setMoeda(e.target.value)}>
+                                value={stateGeral.geral.moeda}
+                                onChange={(e)=> dispatch(editaMoeda(e.target.value))}>
+    
                             <option value="BRL">REAL</option>
                             <option value="DOLAR">DOLAR</option>
                         </select>
                         <select className={style.home_input}
                                 placeholder={"Metodo de Pagamento"}
-                                value={metodoDePagamento}
-                                onChange={(e)=> setMetodoDePagamento(e.target.value)}>
+                                value={stateGeral.geral.metodoDePagamento}
+                                onChange={(e)=> dispatch(editaMetodoDePagamento(e.target.value))}>
                             <option value="DINHEIRO">Dinheiro</option>
                             <option value="CARTÃO DE DÉBITO">Cartão de débito</option>
                             <option value="CARTÃO DE CRÉDITO">Cartão de crédito</option>
                         </select>
                         <select className={style.home_input} placeholder={"Tag"}
-                                value={tag} onChange={(e)=> setTag(e.target.value)}>
+                                value={stateGeral.geral.tag} onChange={(e)=> dispatch(editaTag(e.target.value))}>
                             <option value="ALIMENTAÇÃO">Alimentação</option>
                             <option value="LAZER">Lazer</option>
                             <option value="TRABALHO">Trabalho</option>
@@ -178,13 +160,14 @@ const Home = () => {
                             <option value="SAÚDE">Saúde</option>
                         </select>
                         <input type="date" className={style.home_input} placeholder={"data da despesa"}
-                               value={data.toString()}
-                               onChange={(e)=> setData(new Date(e.target.value))}
-                        /> 
+                                value={stateGeral.geral.dataDaDespesa.toString()}
+                                onChange={(e)=> dispatch(editaDataDaDespesa(e.target.value))}/>
+                        
                     </article>
                     <article className={style.home_article}>
                         <input type={"text"} className={style.home_input_descricao} placeholder={"Descrição"}
-                               value={descricao} onChange={(e)=>setDescricao(e.target.value)}/>
+                            value={stateGeral.geral.descricao}
+                            onChange={(e)=> dispatch(editaDescricao(e.target.value))}/>
                         <input type={"submit"} className={style.home_input} onClick={cadastrarDespesa} value={"+ adicionar"}/>
                     </article>
                 </section>
@@ -203,17 +186,20 @@ const Home = () => {
                             </thead>
                             <tbody className={style.home_table_body}>
 
-                            {despesasRedux.length > 0 && stateGeral.despesasExibidas.despesasExibidas.map((item:despesa, index:number) =>
-                                (
+                            {stateGeral.geral.despesas.length > 0 && stateGeral.geral.despesasExibidas.map((item:despesa, index:number) => {
+                                let data = new Date(item.data.getFullYear(), item.data.getMonth(), item.data.getDate())
+                                data.setDate(data.getDate() + 1)
+                                const dataFormatada = '' + data.getDate() + '/' + (data.getMonth() + 1) + '/' + data.getFullYear()
+                                return (
                                     <tr key={index} className={style.home_table_tr}>
                                         <td>{item.valor}</td>
                                         <td>{item.moeda}</td>
-                                        <td>{item.data.getDate()} / {item.data.getMonth() + 1} / {item.data.getFullYear()} </td>
+                                        <td>{dataFormatada} </td>
                                         <td>{item.metodoDePagamento}</td>
                                         <td>{item.tag}</td>
                                         <td>{item.descricao}</td>
-                                    </tr>
-                                ))}
+                                    </tr>)} ) }
+                                   
                             </tbody>
                         </table>
                     </article>
@@ -221,15 +207,17 @@ const Home = () => {
                 <section className={style.home_end_page}>
                     <article className={style.home_article_edicao_data}>
                         <button className={style.home_button} onClick={diminuirMesAtual}>mês anterior</button>
-                        <h1 className={style.home_texto_data}>{dataAtual.getMonth() + 1} / {dataAtual.getFullYear()}</h1>
+
+                        <h1 className={style.home_texto_data}>{stateGeral.geral.dataAtualDoFiltro.getMonth() + 1} / 
+                        {stateGeral.geral.dataAtualDoFiltro.getFullYear()}</h1>
                         <button onClick={aumentarMesAtual} className={style.home_button}>próximo mês</button>
                         <button onClick={handleChangeAplicarFiltro}  className={style.home_button}>editar período</button>
                     </article>
                     <article>
-                        <h1 className={style.home_texto_data}>R$ {valorTotal.toFixed(2)}</h1>
+                        <h1 className={style.home_texto_data}>R$ {stateGeral.geral.valorTotal}</h1>
                     </article>
                 </section>
-                {stateGeral.aplicarFiltro.aplicarFiltro && <EditorPeriodo />}
+                {stateGeral.geral.aplicarFiltro && <EditorPeriodo />}
             </main>
         </div>
     )
