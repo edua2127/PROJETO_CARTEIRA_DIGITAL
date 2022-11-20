@@ -1,10 +1,25 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import style from '../styles/home.module.css'
 import type {RootState} from '../store'
-import { despesa } from '../interface/despesa';
-import { editaAplicarFiltro, editaDataAtualDoFiltro, editaDespesasExibidas, editaAtualizaValorDolar, editaDataDaDespesa, editaDescricao, editaDespesas, editaMetodoDePagamento, editaMoeda, editaPeriodoFinal, editaPeriodoInicial, editaTag, editaValor, editaValorDolar, editaValorTotal } from '../slice/geralSlice2';
+import {despesa} from '../interface/despesa';
+import {
+    editaAplicarFiltro,
+    editaAtualizaValorDolar,
+    editaDataAtualDoFiltro,
+    editaDataDaDespesa,
+    editaDescricao,
+    editaDespesas,
+    editaDespesasExibidas,
+    editaMetodoDePagamento,
+    editaMoeda,
+    editaTag,
+    editaValor,
+    editaValorDolar,
+    editaValorTotal
+} from '../slice/geralSlice2';
 import EditorPeriodo from '../components/EditorPeriodo';
+
 const Home = () => {
     //variaveis usadas para setar um valor inicial
     let teste:despesa[] = []
@@ -29,43 +44,41 @@ const Home = () => {
         console.log(novaData.getMonth() + 1)
     }
 
+    function filtroPelaDataAtual() {
+        let novaDespesasExibidas:despesa[] = [...stateGeral.geral.despesas]
+        novaDespesasExibidas = novaDespesasExibidas.filter((despesaAtual) => {
+            let dataDaDespesaAtual = new Date(despesaAtual.data)
+            dataDaDespesaAtual.setDate(dataDaDespesaAtual.getDate() + 1)
+            const dataAtualDoFiltro = new Date(stateGeral.geral.dataAtualDoFiltro)
+
+            return dataDaDespesaAtual.getMonth() === dataAtualDoFiltro.getMonth()
+                && dataDaDespesaAtual.getFullYear() === dataAtualDoFiltro.getFullYear()
+        })
+        console.log(stateGeral.geral.dataAtualDoFiltro.getMonth() + 1)
+        console.log(novaDespesasExibidas)
+        dispatch(editaDespesasExibidas(novaDespesasExibidas))
+    }
+
 
     React.useEffect(()=> {
-        function filtroPelaDataAtual() {
-            let novaDespesasExibidas:despesa[] = [...stateGeral.geral.despesas] 
-            novaDespesasExibidas = novaDespesasExibidas.filter((despesaAtual) => {
-                let dataDaDespesaAtual = new Date(despesaAtual.data)
-                dataDaDespesaAtual.setDate(dataDaDespesaAtual.getDate() + 1)
-                const dataAtualDoFiltro = new Date(stateGeral.geral.dataAtualDoFiltro)
-
-                return dataDaDespesaAtual.getMonth() === dataAtualDoFiltro.getMonth() 
-                && dataDaDespesaAtual.getFullYear() === dataAtualDoFiltro.getFullYear()
-            })
-            console.log(stateGeral.geral.dataAtualDoFiltro.getMonth() + 1)
-            console.log(novaDespesasExibidas)
-            dispatch(editaDespesasExibidas(novaDespesasExibidas))
-        }
-
         filtroPelaDataAtual()
     }, [stateGeral.geral.dataAtualDoFiltro])
 
-
-
-    //api que retorna o valor do dolar atual
-    React.useEffect(() => {
-        const fetchData = async() => {
-            try {
-                const res = await fetch('https://economia.awesomeapi.com.br/json/all')
-                const json = await res.json()
-                dispatch(editaValorDolar(parseFloat(json.USD.bid)))
-            } catch (error) {
-                console.log('erro ao carregar o valor do dolar ' + error)
-            }
-            
+    //função que atualiza o valor do dolar
+    const atualizaValorDolaApi = async() => {
+        try {
+            const res = await fetch('https://economia.awesomeapi.com.br/json/all')
+            const json = await res.json()
+            dispatch(editaValorDolar(parseFloat(json.USD.bid)))
+        } catch (error) {
+            console.log('erro ao carregar o valor do dolar ' + error)
         }
-        fetchData()
-    }, [stateGeral.geral.atualizaValorDolar])
+    }
 
+
+    React.useEffect(() => {
+        atualizaValorDolaApi()
+    }, [stateGeral.geral.atualizaValorDolar])
 
     /* 
         função que calcula o valor total das despesas, verifica se a moeda é dolar e se sim multiplica pelo valor do dolar atual
@@ -120,7 +133,7 @@ const Home = () => {
     }
 
     function criaUmaDespesaComOsDadosDoEditor(): despesa {
-        const novaDespesa: despesa = {
+        return {
             valor: stateGeral.geral.valor,
             metodoDePagamento: stateGeral.geral.metodoDePagamento,
             moeda: stateGeral.geral.moeda,
@@ -128,7 +141,6 @@ const Home = () => {
             descricao: stateGeral.geral.descricao,
             data: stateGeral.geral.dataDaDespesa,
         }
-        return novaDespesa
     }
 
     function limpaOsCamposDeDespesa() {
