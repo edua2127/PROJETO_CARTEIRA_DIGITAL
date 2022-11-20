@@ -94,6 +94,32 @@ const Home = () => {
     */
     function cadastrarDespesa() {
 
+        //cria um novo objeto despesa
+        const novaDespesa: despesa = criaUmaDespesaComOsDadosDoEditor()
+
+        //limpa os states que compoem a despesa
+        limpaOsCamposDeDespesa()
+
+        //guarda a nova despesa no redux state
+        dispatch(editaDespesas([...stateGeral.geral.despesas, novaDespesa]))
+
+        //atualiza o valor do dolar para calcular o valor total das despesas
+        atualizaValorDolar()
+    }
+
+    function atualizaValorDolar() {
+        dispatch(editaAtualizaValorDolar(true))
+    }
+
+    React.useEffect(()=> {
+        atualizaAsDespesasExibidas()
+    }, [stateGeral.geral.despesas])
+
+    function atualizaAsDespesasExibidas() {
+        dispatch(editaDespesasExibidas(stateGeral.geral.despesas))
+    }
+
+    function criaUmaDespesaComOsDadosDoEditor(): despesa {
         const novaDespesa: despesa = {
             valor: stateGeral.geral.valor,
             metodoDePagamento: stateGeral.geral.metodoDePagamento,
@@ -102,24 +128,18 @@ const Home = () => {
             descricao: stateGeral.geral.descricao,
             data: stateGeral.geral.dataDaDespesa,
         }
+        return novaDespesa
+    }
 
-        //limpa os states que compoem a despesa
+    function limpaOsCamposDeDespesa() {
         dispatch(editaValor(0))
         dispatch(editaDescricao(""))
         dispatch(editaMoeda(""))
         dispatch(editaTag(""))
         dispatch(editaDataDaDespesa(DateType))
         dispatch(editaMetodoDePagamento(""))
-
-        //guarda a nova despesa no redux state
-        dispatch(editaDespesas([...stateGeral.geral.despesas, novaDespesa]))
-
-        //atualiza o valro do dolar para calcular o valor total das despesas
-        dispatch(editaAtualizaValorDolar(true))
-        //filtro padrao: todas as despesas vao ser visualizadas, apos realizar um cadastro
-        dispatch(editaDespesasExibidas([...stateGeral.geral.despesas, novaDespesa]))
     }
-    
+
     /*
         funcão que sinaliza quando o componente EditorPeriodo deve ser renderizado
     */
