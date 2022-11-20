@@ -33,7 +33,6 @@ const Home = () => {
         const novaData = new Date(stateGeral.geral.dataAtualDoFiltro.getFullYear(), 
         stateGeral.geral.dataAtualDoFiltro.getMonth() + 1, stateGeral.geral.dataAtualDoFiltro.getDay())
         dispatch(editaDataAtualDoFiltro(novaData))
-        console.log(novaData.getMonth() + 1)
         
     }
 
@@ -41,7 +40,6 @@ const Home = () => {
         const novaData = new Date(stateGeral.geral.dataAtualDoFiltro.getFullYear(), 
         stateGeral.geral.dataAtualDoFiltro.getMonth() - 1, stateGeral.geral.dataAtualDoFiltro.getDay())
         dispatch(editaDataAtualDoFiltro(novaData))
-        console.log(novaData.getMonth() + 1)
     }
 
     function filtroPelaDataAtual() {
@@ -54,8 +52,6 @@ const Home = () => {
             return dataDaDespesaAtual.getMonth() === dataAtualDoFiltro.getMonth()
                 && dataDaDespesaAtual.getFullYear() === dataAtualDoFiltro.getFullYear()
         })
-        console.log(stateGeral.geral.dataAtualDoFiltro.getMonth() + 1)
-        console.log(novaDespesasExibidas)
         dispatch(editaDespesasExibidas(novaDespesasExibidas))
     }
 
@@ -92,10 +88,8 @@ const Home = () => {
                 
                 if (despesaAtual.moeda === 'DOLAR') {
                     valorEmReal = despesaAtual.valor * stateGeral.geral.valorDolar
-                    console.log('valor em real depois que foi convertido de dolar: ' + valorEmReal)
                 }
                 valorTotalAtual += valorEmReal
-                console.log(valorTotalAtual)
             })
             dispatch(editaValorTotal(valorTotalAtual.toFixed(2)))
         }
